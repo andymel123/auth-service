@@ -25,16 +25,65 @@
 	</properties>
 
 	<dependencies>
+		
+		<!-- core spring boot stuff -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 
+		<!-- I'm a web app, so... -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		
+		<!-- I will not retrieve bootstrap or jquery from this service, I add those 
+		dependencies for now only to be able to maybe test it without the outer website
+		that calls the service normally.   
+		"The webjar locator is activated by default in a Spring Boot app as long as 
+		you don’t switch off the MVC autoconfiguration."-->
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>webjars-locator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>3.2.0</version>
+		</dependency>
+		
+		<!-- to secure the service -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		
+		<!-- the default auth with spring security would be HTTP Basic, but I delegate authorization with the help of oAuth2  -->
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+		</dependency>
+		
+		<!-- "imports both Spring Boot test modules as well has JUnit, AssertJ, Hamcrest and a number of other useful libraries" -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- to simply add cockies (necessary in step 3 of the "Spring Boot and OAuth2" tutorial "csrf-token at logout") -->
+		<dependency>
+		    <groupId>org.webjars</groupId>
+		    <artifactId>js-cookie</artifactId>
+		    <version>2.1.0</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
