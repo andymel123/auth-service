@@ -1,8 +1,14 @@
 package eu.andymel.authservicespring;
 
+import java.security.Principal;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /*
@@ -45,48 +51,53 @@ public class AuthServiceSpringApplication {
 	}
 	
 	
-//	/* an own endpoint to get the data of the logged in user
-//	 * (only allowed when logged in) */
-//	@RequestMapping("/user")
-//	public Map<String, String> user(Principal principal) {
-//		Map<String, String> map = new LinkedHashMap<>();
-//		// put in the map what is needed on the client side
-//
-//		/* this should always give me a unique id for the provider
-//		 * but not a human readable name (eg for facebook its a long number) */
-//		
-//		
-//		// in addition I try to get a human readable name out of the data
-//		if(principal instanceof OAuth2Authentication) {
-//			OAuth2Authentication a = (OAuth2Authentication)principal;
-//			Object det = a.getUserAuthentication().getDetails();
-//			if(det instanceof Map) {
-//				Map<?,?> details = (Map<?, ?>) ((OAuth2Authentication) principal).getUserAuthentication().getDetails();
-//
-//				/*
-//				 * TODO read spmewhere/somehow depending on provider
-//				 */
-//				
-//				// facebook and github
-//				map.put("id", 		asString(details, "id"));
-//				map.put("name", 	asString(details, "name"));
-//				                                     
-//				// only in github data               
-//		        map.put("location", asString(details, "location"));
-//		        map.put("company",  asString(details, "company"));
-//		        map.put("website",  asString(details, "blog"));
-//		        map.put("pic",  	asString(details, "avatar_url"));
-//                                                     
-//		        // google                          
-//		        map.put("sub", 		asString(details, "sub"));	// ist die ID! (google hat kein feld "id")
-//				map.put("email", 	asString(details, "email"));
-//				map.put("gender", 	asString(details, "gender"));
-//				map.put("pic", 		asString(details, "picture"));
-//				map.put("locale", 	asString(details, "locale"));
-//			}
-//		}
-//
-//		return map;
-//	}
+	/* an own endpoint to get the data of the logged in user
+	 * (only allowed when logged in) */
+	@RequestMapping("/user")
+	public Map<String, String> user(Principal principal) {
+		Map<String, String> map = new LinkedHashMap<>();
+		// put in the map what is needed on the client side
+
+		/* this should always give me a unique id for the provider
+		 * but not a human readable name (eg for facebook its a long number) */
+		
+		
+		// in addition I try to get a human readable name out of the data
+		if(principal instanceof OAuth2Authentication) {
+			OAuth2Authentication a = (OAuth2Authentication)principal;
+			Object det = a.getUserAuthentication().getDetails();
+			if(det instanceof Map) {
+				Map<?,?> details = (Map<?, ?>) ((OAuth2Authentication) principal).getUserAuthentication().getDetails();
+
+				/*
+				 * TODO read spmewhere/somehow depending on provider
+				 */
+				
+				// facebook and github
+				map.put("id", 		asString(details, "id"));
+				map.put("name", 	asString(details, "name"));
+				                                     
+				// only in github data               
+		        map.put("location", asString(details, "location"));
+		        map.put("company",  asString(details, "company"));
+		        map.put("website",  asString(details, "blog"));
+		        map.put("pic",  	asString(details, "avatar_url"));
+                                                     
+		        // google                          
+		        map.put("sub", 		asString(details, "sub"));	// ist die ID! (google hat kein feld "id")
+				map.put("email", 	asString(details, "email"));
+				map.put("gender", 	asString(details, "gender"));
+				map.put("pic", 		asString(details, "picture"));
+				map.put("locale", 	asString(details, "locale"));
+			}
+		}
+
+		return map;
+	}
 	
+	private String asString(Map<?, ?> details, String key) {
+		Object o = details.get(key);
+		if(o==null)return "null";
+		return o.toString();
+	}
 }

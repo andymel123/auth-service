@@ -15,7 +15,8 @@ import org.springframework.security.core.GrantedAuthority;
  *         May 23, 2016
  */
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
-    private static final long serialVersionUID = 2877954820905567501L;
+    
+	private static final long serialVersionUID = 2877954820905567501L;
 
     private RawAccessJwtToken rawAccessToken;
     
@@ -59,4 +60,5 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         super.eraseCredentials();
         this.rawAccessToken = null;
     }
+    
 }

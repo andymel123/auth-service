@@ -166,7 +166,9 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 	// build an own authentication filter for my OAuth2 id providers
 	private Filter ssoFilter(OAuthProviderConfig oAuthProviderConfig, String path) {
 		
-		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
+//		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
+		OAuth2ClientAuthenticationProcessingFilter filter = new MyOAuth2AuthenticationProcessingFilter(path);
+		
 		
 		OAuth2RestTemplate template = new OAuth2RestTemplate(
 			oAuthProviderConfig.getClient(), 
