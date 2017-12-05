@@ -1,8 +1,10 @@
-package eu.andymel.authservicespring;
+package eu.amcoustics.auth.test.springauthtutorial.oauth;
 
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
+
+// from https://spring.io/guides/tutorials/spring-boot-oauth2/
 
 public class OAuthProviderConfig {
 
@@ -19,4 +21,5 @@ public class OAuthProviderConfig {
 	public ResourceServerProperties getResource() {
 		return resource;
 	}
+	
 }
