@@ -1,4 +1,4 @@
-package eu.amcoustics.auth.test.springauthtutorial.oauth;
+package eu.andymel.services.auth.oauth;
 
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.web.servlet.ErrorPage;

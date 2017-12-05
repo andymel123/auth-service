@@ -1,4 +1,4 @@
-package eu.amcoustics.auth.test.springauthtutorial;
+package eu.andymel.services.auth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +23,10 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CompositeFilter;
 
-import eu.amcoustics.auth.test.springauthtutorial.jwt.JWTAuthorizationFilter;
-import eu.amcoustics.auth.test.springauthtutorial.jwt.JWTCookieRemoverOnLogout;
-import eu.amcoustics.auth.test.springauthtutorial.oauth.MyOAuthFilter;
-import eu.amcoustics.auth.test.springauthtutorial.oauth.OAuthProviderConfig;
+import eu.andymel.services.auth.jwt.JWTAuthorizationFilter;
+import eu.andymel.services.auth.jwt.JWTCookieRemoverOnLogout;
+import eu.andymel.services.auth.oauth.MyOAuthFilter;
+import eu.andymel.services.auth.oauth.OAuthProviderConfig;
 
 @Configuration
 @EnableWebSecurity

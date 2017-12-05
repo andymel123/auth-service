@@ -1,4 +1,4 @@
-package eu.amcoustics.auth.test.springauthtutorial.jwt;
+package eu.andymel.services.auth.jwt;
 
 import java.io.IOException;
 

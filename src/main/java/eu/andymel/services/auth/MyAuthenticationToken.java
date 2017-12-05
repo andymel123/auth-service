@@ -1,4 +1,4 @@
-package eu.amcoustics.auth.test.springauthtutorial;
+package eu.andymel.services.auth;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

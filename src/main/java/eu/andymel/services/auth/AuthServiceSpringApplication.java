@@ -1,4 +1,4 @@
-package eu.amcoustics.auth.test.springauthtutorial;
+package eu.andymel.services.auth;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

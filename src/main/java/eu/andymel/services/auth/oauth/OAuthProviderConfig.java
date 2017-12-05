@@ -1,4 +1,4 @@
-package eu.amcoustics.auth.test.springauthtutorial.oauth;
+package eu.andymel.services.auth.oauth;
 
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;

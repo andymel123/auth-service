@@ -1,4 +1,4 @@
-package eu.amcoustics.auth.test.springauthtutorial.oauth;
+package eu.andymel.services.auth.oauth;
 
 import java.io.IOException;
 import java.util.Date;
@@ -19,8 +19,8 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
-import eu.amcoustics.auth.test.springauthtutorial.MyAuthenticationToken;
-import eu.amcoustics.auth.test.springauthtutorial.jwt.MyJWTUtils;
+import eu.andymel.services.auth.MyAuthenticationToken;
+import eu.andymel.services.auth.jwt.MyJWTUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 

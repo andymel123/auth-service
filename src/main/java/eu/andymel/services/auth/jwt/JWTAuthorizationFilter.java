@@ -1,4 +1,4 @@
-package eu.amcoustics.auth.test.springauthtutorial.jwt;
+package eu.andymel.services.auth.jwt;
 
 import java.io.IOException;
 
@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.util.WebUtils;
 
-import eu.amcoustics.auth.test.springauthtutorial.MyAuthenticationToken;
+import eu.andymel.services.auth.MyAuthenticationToken;
 
 public class JWTAuthorizationFilter extends AbstractAuthenticationProcessingFilter {
 
