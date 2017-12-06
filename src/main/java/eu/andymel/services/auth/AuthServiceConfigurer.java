@@ -36,9 +36,8 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 	
 	// OAuth2ClientContext to build my OAuth2 authentication filters
 	@Autowired
-	OAuth2ClientContext oauth2ClientContext;
+	private OAuth2ClientContext oauth2ClientContext;
 
-	
 	/* a method of WebSecurityConfigurerAdapter */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -104,6 +103,8 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 		super.configure(auth);
 	}
 	
+	
+	
 	/*
 	 * get my oauth2 settings from the application.yml
 	 */
@@ -123,6 +124,16 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 		return new OAuthProviderConfig();
 	}
 
+	
+	
+	
+//	###################
+//	so könnte das lesen von anderem prop file gehen für private sachen! 
+//	@ConfigurationProperties(prefix="tenantdb", locations={"datasources.yml"})
+//	from https://stackoverflow.com/a/33751950/7869582
+
+	
+	
 	/*
 	 * Combine my authentication filters to one filter
 	 */
@@ -131,6 +142,7 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 		CompositeFilter filter = new CompositeFilter();
 		
 		List<Filter> filters = new ArrayList<>();
+		
 		// TODO move oauthclientcontext and config key name into myOauthFilter class!?
 		filters.add(new MyOAuthFilter(facebook(), 	"/login/facebook", 	oauth2ClientContext));
 		filters.add(new MyOAuthFilter(google(), 	"/login/google", 	oauth2ClientContext));
