@@ -5,49 +5,58 @@ import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import eu.andymel.services.auth.jwt.JWTCookieRemoverOnLogout;
+import eu.andymel.services.auth.oauth.MyOAuthFilter;
+import eu.andymel.services.auth.oauth.OAuthProviderConfig;
 
-/*
+
+/**
  * The tutorial I have the delegation of authentication to social id providers from is 
  * 1.) https://spring.io/guides/tutorials/spring-boot-oauth2/ 
  * 
- * For the JWT part I will try to get infos from 
+ * For the JWT part I took inspiration from (but simplified a lot)
  * 2.) https://auth0.com/blog/implementing-jwt-authentication-on-spring-boot/
- * 
- * if thats not enough I will try to get info from 
  * 3.) http://www.svlada.com/jwt-token-authentication-with-spring-boot/#ajax-authentication
+ *
+ * What happens if a user connects to this AuthService:
+ * 	> The Service checks if there already is a jwt token set
+ * 	> If not it returns the possible ID Providers to login
+ *  > Depending on which ID Provider is choosen by the user, the next request comes to a specific path /login/provider
+ *  > from there the service redirects to the providers login page (OAuth2)
+ *  > After login the provider redirects back to login/provider.
+ *  > The AuthService checks the given data from the provider 
+ *  > if the data is correct the AuthService issues a JWT token and sets it as (httpOnly and secure) cookie in the users request
+ *  > As it's a cookie all future requests will contain this cookie as long as its valid
+ *  > if a valid jwt cookie is set in a request the AuthService (and all other services) authorize the user with this cookie
  * 
- * Regarding to (2) i need
- * 	a) implement an authentication filter to issue JWTS to users sending credentials
- * 		this should be done by (1) I just need to issue JWT instead of the session
- * 
- * 	b) implement an authorization filter to validate requests containing JWTs
- *  	this I will need on every (resource) microservice. Here in the AuthService I mainly need 
- *  	the refresh logic
+ * This project contains:
+ * As general code:
+ *  > This {@link AuthServiceSpringApplication} class
+ *  > The {@link AuthServiceConfigurer} class to do the configuration
+ *  > The {@link MyAuthenticationToken} as {@link Authentication} object (used by spring security to hold data about the authenticated user)
  *  
- * 	c) implemnet a custom version of UserDetailsService to help Spring Security loading user-specific data in the framework
- *  	lets see?!
+ * For the OAuth part:
+ *  > {@link MyOAuthFilter} extends OAuth2ClientAuthenticationProcessingFilter and adds 
+ *  	> loading the provider data from the application.yml
+ * 		> creating my {@link MyAuthenticationToken} when getting a successful answer from tzhe id provider
+ * 		> creating a cookie with the JWT token in the users request
+ *  > {@link OAuthProviderConfig} holds the id-provider data from the application.yml
  *  
- * 	d) use the WebSecurityConfigurerAdapter to customize the security framework
- *  	this was also done in (1) I will need to cahnge that I guess
- * 
- * 
- * regarding 2a)
- * In (1) I have all one OAuth2ClientAuthenticationProcessingFilter per id provider
- * In (2) he builds a JWTAuthenticationFilter (extending UsernamePasswordAuthenticationFilter)
- * Both (the OAUth.. as well as the UsernameP... filters) are extending AbstractAuthenticationProcessingFilter so I simply leave the combined filter from (1) intact.
- * But (2) already includes the JWT issuing logic inside of his JWTAuthenticationFilter class so I need to extract this and put it into the OAUth filters.
- * But I will not extend the OAuth filter like (2) does (because of composition over inheritance). 
- * In fact I switch to (3) because there it is already done by composition:
- * In (3) he builds an AjaxLoginProcessingFilter, also extending AbstractAuthenticationProcessingFilter. The consturctor gets custom made
- * AuthenticationSuccessHandler and AuthenticationFailureHandler. 
- * I start by copying the first one and simply try to add it as handler to my 
- *  
+ * For the JWT part:
+ *  > {@link JWTCookieRemoverOnLogout} extends LogoutSuccessHandler is called when a user logs out and simply removes the jwt token
+ *  > MYJWTUtils prevents code duplication by holding whatever jwt related code I need more than once
  * 
  */
 
@@ -86,8 +95,11 @@ public class AuthServiceSpringApplication{
 	  return "redirect:/?error=true";
 	}
 	
-	
-	
-
+	@Bean
+	public EmbeddedServletContainerCustomizer customizer() {
+		return container -> {
+			container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/unauthenticated"));
+		};
+	}
 	
 }
