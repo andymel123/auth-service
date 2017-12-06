@@ -1,6 +1,8 @@
 package eu.andymel.services.auth;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
@@ -73,8 +75,7 @@ public class AuthServiceSpringApplication{
 		SpringApplication.run(AuthServiceSpringApplication.class, args);
 	}
 	
-	/* an own endpoint to get the data of the logged in user
-	 * (only allowed when logged in) */
+	/* endpoint to get the data of the logged in user (only allowed when logged in) */
 	@RequestMapping("/user")
 	@ResponseBody // necessary as my app is a @Controller now not a @RestController anymore
 	public Map<String, String> user(MyAuthenticationToken authentication) {
@@ -82,6 +83,15 @@ public class AuthServiceSpringApplication{
 		map.put("name", authentication.getUserName());
 		return map;
 	}
+	
+	/* endpoint to get data of the available id providers */
+	@RequestMapping("/login")
+	@ResponseBody // necessary as my app is a @Controller now not a @RestController anymore
+	public List<String> getIdProviders() {
+		return Arrays.asList("facebook", "google", "github");
+	}
+	
+	
 	
 	/*
 	 * After an authentication error I redirect to the home page with a flag set in 

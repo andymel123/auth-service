@@ -17,17 +17,7 @@
 
 	<h1>Login</h1>
 
-	<div class="container unauthenticated">
-    	<div>
-			With Facebook: <a href="/login/facebook">click here</a>
-		</div>
-    	<div>
-			With Google: <a href="/login/google">click here</a>
-		</div>
-		<div>
-			With Github: <a href="/login/github">click here</a>
-		</div>
-	</div>
+	<div id="divLogins" class="container unauthenticated"></div>
 
 	<div class="container authenticated" style="display:none">
 	    Logged in as: <span id="user"></span>
@@ -41,6 +31,24 @@
 	</div>
 	
 	<script type="text/javascript">
+	
+		console.log("Try to fetch provider data...");
+		$.ajax(
+		{
+			url : "/login",
+			success : function(providerData) {
+				console.log("got providerData", providerData);
+
+				var divLogins = $("#divLogins");
+				for(var i=0; i<providerData.length; i++){
+					var name = providerData[i];
+					divLogins.append("<div>With "+name+": <a href='/login/"+name+"'>click here</a></div>")
+				}
+			},
+			error : function(data) {
+				console.warn("Could not get providerData", data);
+			}
+		});
 	
 		/* Im 3ten schritt des Tutorials wird für den logout request dieser token gegen 
 			csrf (cross site request forgery) hinzugefügt. */
