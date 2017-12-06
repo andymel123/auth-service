@@ -48,7 +48,7 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 			.antMatcher("/**").authorizeRequests()
 					
 			// only allow the following requests without being logged in
-			.antMatchers("/", "/login**", "/webjars/**", "/**/favicon.ico").permitAll()
+			.antMatchers("/", "/auth**", "/webjars/**", "/**/favicon.ico").permitAll()
 			
 			// all others are only allowed when logged in and will result in a 401 if not
 			.anyRequest().authenticated()
@@ -83,11 +83,11 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 				// set the OAuth filter before, it will only handle his login/provider...rquests
 				// all other requests, will go on in the filter chain and reach my jwt filter net
 				.addFilterBefore(
-					authenticationFilter(), 	// my combined OAuth2 filter for all providers 
+					authenticationFilter(), 	// my combined OAuth2 filter that filters a given path per id provider 
 					BasicAuthenticationFilter.class	// add it before this filter class
 				)
 				.addFilterBefore(
-					new JWTAuthorizationFilter(), 	// first look if the request already has a jwt 
+					new JWTAuthorizationFilter(), 	// authorizes on every path if a valid jwt token is found in the request
 					BasicAuthenticationFilter.class	// add it before this filter class
 				)
 		
@@ -109,17 +109,22 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 	 * get my oauth2 settings from the application.yml
 	 */
 	@Bean
-	@ConfigurationProperties("github")
+	@ConfigurationProperties("oauth.github")
 	public OAuthProviderConfig github() {
 		return new OAuthProviderConfig();
 	}
 	@Bean
-	@ConfigurationProperties("facebook")
+	@ConfigurationProperties("oauth.github_al")
+	public OAuthProviderConfig github_al() {
+		return new OAuthProviderConfig();
+	}
+	@Bean
+	@ConfigurationProperties("oauth.facebook")
 	public OAuthProviderConfig facebook() {
 		return new OAuthProviderConfig();
 	}
 	@Bean
-	@ConfigurationProperties("google")
+	@ConfigurationProperties("oauth.google")
 	public OAuthProviderConfig google() {
 		return new OAuthProviderConfig();
 	}
@@ -144,9 +149,10 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 		List<Filter> filters = new ArrayList<>();
 		
 		// TODO move oauthclientcontext and config key name into myOauthFilter class!?
-		filters.add(new MyOAuthFilter(facebook(), 	"/login/facebook", 	oauth2ClientContext));
-		filters.add(new MyOAuthFilter(google(), 	"/login/google", 	oauth2ClientContext));
-		filters.add(new MyOAuthFilter(github(), 	"/login/github", 	oauth2ClientContext));
+		filters.add(new MyOAuthFilter(facebook(), 	"/auth/facebook", 	oauth2ClientContext));
+		filters.add(new MyOAuthFilter(google(), 	"/auth/google", 	oauth2ClientContext));
+		filters.add(new MyOAuthFilter(github(), 	"/auth/github", 	oauth2ClientContext));
+		filters.add(new MyOAuthFilter(github_al(), 	"/auth/github_al",	oauth2ClientContext));
 		
 		filter.setFilters(filters);
 		

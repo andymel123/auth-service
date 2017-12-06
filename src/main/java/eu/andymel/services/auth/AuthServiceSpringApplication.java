@@ -4,14 +4,20 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.ErrorPage;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.env.AbstractEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.stereotype.Controller;
@@ -34,9 +40,9 @@ import eu.andymel.services.auth.oauth.OAuthProviderConfig;
  * What happens if a user connects to this AuthService:
  * 	> The Service checks if there already is a jwt token set
  * 	> If not it returns the possible ID Providers to login
- *  > Depending on which ID Provider is choosen by the user, the next request comes to a specific path /login/provider
+ *  > Depending on which ID Provider is choosen by the user, the next request comes to a specific path /auth/provider
  *  > from there the service redirects to the providers login page (OAuth2)
- *  > After login the provider redirects back to login/provider.
+ *  > After login the provider redirects back to /auth/provider.
  *  > The AuthService checks the given data from the provider 
  *  > if the data is correct the AuthService issues a JWT token and sets it as (httpOnly and secure) cookie in the users request
  *  > As it's a cookie all future requests will contain this cookie as long as its valid
@@ -70,13 +76,40 @@ import eu.andymel.services.auth.oauth.OAuthProviderConfig;
 
 public class AuthServiceSpringApplication{
 
+	private static final Log logger = LogFactory.getLog(AuthServiceSpringApplication.class);
 	
 	public static void main(String[] args) {
 		SpringApplication.run(AuthServiceSpringApplication.class, args);
 	}
 	
+	@Autowired
+	Environment springEnv;
+	
+	@PostConstruct
+	public void init() {
+
+		// this prints all properties set in the spring environment with DEBUG level
+		// inspired by https://stackoverflow.com/a/42521523/7869582 
+		if(logger.isDebugEnabled()) {
+			StringBuffer sb = new StringBuffer("\n");
+			MutablePropertySources propSrcs = ((AbstractEnvironment) springEnv).getPropertySources();
+			StreamSupport.stream(propSrcs.spliterator(), false)
+		        .filter(ps -> ps instanceof EnumerablePropertySource)
+		        .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
+		        .flatMap(Arrays::<String>stream)
+		        .sorted()
+		        .forEach(propName -> {
+		        	sb.append(propName).append("\t=> ");
+		        	sb.append(springEnv.getProperty(propName)).append('\n');
+		        });
+			
+			logger.debug(sb.toString());
+		}
+		
+	}
+
 	/* endpoint to get the data of the logged in user (only allowed when logged in) */
-	@RequestMapping("/user")
+	@RequestMapping("/auth/user")
 	@ResponseBody // necessary as my app is a @Controller now not a @RestController anymore
 	public Map<String, String> user(MyAuthenticationToken authentication) {
 		Map<String, String> map = new LinkedHashMap<>();
@@ -85,13 +118,24 @@ public class AuthServiceSpringApplication{
 	}
 	
 	/* endpoint to get data of the available id providers */
-	@RequestMapping("/login")
+	@RequestMapping("/auth")
 	@ResponseBody // necessary as my app is a @Controller now not a @RestController anymore
 	public List<String> getIdProviders() {
 //		// replace by configured data once reading dynamic data from application.yml works
 //		// so https://stackoverflow.com/questions/47676164/bind-complex-config-data-from-application-yml-in-spring-boot
-		return Arrays.asList("facebook", "google", "github");
+		return Arrays.asList("facebook", "google", "github", "github_al");
 	}
+	
+	
+	
+	/*
+	 * TODO answer this if guthub redirect works again 
+	 * https://stackoverflow.com/questions/36252758/spring-boot-oauth2-https-redirect-uri-instead-of-http
+	 * 
+	 * and here
+	 * https://stackoverflow.com/questions/33812471/spring-oauth-redirect-uri-not-using-https
+	 * 
+	 */
 	
 	
 	
@@ -101,16 +145,20 @@ public class AuthServiceSpringApplication{
 	 * 
 	 * see ServletCustomizer.java - this adds an ErrorPage for HttpStatus.UNAUTHORIZED to "/unauthenticated"
 	 */
-	@RequestMapping("/unauthenticated")
-	public String unauthenticated() {
-	  return "redirect:/?error=true";
-	}
-	
-	@Bean
-	public EmbeddedServletContainerCustomizer customizer() {
-		return container -> {
-			container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/unauthenticated"));
-		};
-	}
+/*
+ * commented out as it makes problems and is not really needed at the moment
+ * it redirects to http://localhost...even if my request comdes from https://amcoustics.local
+ */
+//	@RequestMapping("/unauthenticated")
+//	public String unauthenticated() {
+//	  return "redirect:/?error=true";
+//	}
+//	
+//	@Bean
+//	public EmbeddedServletContainerCustomizer customizer() {
+//		return container -> {
+//			container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/unauthenticated"));
+//		};
+//	}
 	
 }

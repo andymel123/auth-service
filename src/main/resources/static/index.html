@@ -35,14 +35,14 @@
 		console.log("Try to fetch provider data...");
 		$.ajax(
 		{
-			url : "/login",
+			url : "/auth",
 			success : function(providerData) {
 				console.log("got providerData", providerData);
 
 				var divLogins = $("#divLogins");
 				for(var i=0; i<providerData.length; i++){
 					var name = providerData[i];
-					divLogins.append("<div>With "+name+": <a href='/login/"+name+"'>click here</a></div>")
+					divLogins.append("<div>With "+name+": <a href='/auth/"+name+"'>click here</a></div>")
 				}
 			},
 			error : function(data) {
@@ -72,7 +72,10 @@
 	    var logout = function() {
 	    	console.log("logout...");
 	    	/* spring already has a logout function that does the right thing
-	    		clear the session and invalidate the cookie */
+	    		clear the session and invalidate the cookie 
+	    		
+	    		TODO change to /auth/logout ?!
+	    		*/
 	        $.post("/logout", function() {
 	            $("#user").html('');
 	            $(".unauthenticated").show();
@@ -87,7 +90,7 @@
 	    
 		$.ajax(
 		{
-			url : "/user",
+			url : "/auth/user",
 			success : function(userData) {
 				console.log("user is logged in", userData);
 				$(".unauthenticated").hide();

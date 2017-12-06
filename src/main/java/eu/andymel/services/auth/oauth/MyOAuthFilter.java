@@ -89,7 +89,7 @@ public class MyOAuthFilter extends OAuth2ClientAuthenticationProcessingFilter {
         res.addCookie(jwtAccessCookie);
 
         /* added to let the OAuth2ClientAuthenticationProcessingFilter
-         * take care about the redirect from /login/... back to '/' */
+         * take care about the redirect from /auth/... back to '/' */
         super.successfulAuthentication(req, res, chain, auth);
         
     }
