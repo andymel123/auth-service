@@ -88,6 +88,8 @@ public class AuthServiceSpringApplication{
 	@RequestMapping("/login")
 	@ResponseBody // necessary as my app is a @Controller now not a @RestController anymore
 	public List<String> getIdProviders() {
+//		// replace by configured data once reading dynamic data from application.yml works
+//		// so https://stackoverflow.com/questions/47676164/bind-complex-config-data-from-application-yml-in-spring-boot
 		return Arrays.asList("facebook", "google", "github");
 	}
 	
