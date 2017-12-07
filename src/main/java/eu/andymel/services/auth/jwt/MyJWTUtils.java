@@ -1,5 +1,18 @@
 package eu.andymel.services.auth.jwt;
 
+import java.io.IOException;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+
 import io.jsonwebtoken.Jwts;
 
 public class MyJWTUtils {
@@ -11,8 +24,18 @@ public class MyJWTUtils {
 
     public static final String USER_DATA_URL = "/user";
 	
-    
-    
+//    @Value("${jwt.key-store}")
+//    private String jwtKeystore;
+//
+//    @Value("${jwt.keyStoreType}")
+//    private String keyStoreType;
+//
+//    @Value("${jwt.key-store}")
+//    private String jwtKeystore;
+//
+//    @Value("${jwt.key-store}")
+//    private String jwtKeystore;
+
     public static String getNameFromJWTTokenString(String accessToken) {
 		try {
 	    	String name = Jwts.parser()
@@ -25,4 +48,17 @@ public class MyJWTUtils {
 			throw new RuntimeException("Can't parse jwt token '"+accessToken+"'", e);
 		}
 	}
+    
+    public static Key getPrivateJWTKey() throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, CertificateException, IOException {
+    	// from https://github.com/jwtk/jjwt/issues/131
+    	ClassPathResource resource = new ClassPathResource("keystore.jks");
+        KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+        keystore.load(resource.getInputStream(), "jkspassword".toCharArray());
+
+        Key key = keystore.getKey("jwtkey", "keypassword".toCharArray());
+        Certificate cert = keystore.getCertificate("jwtkey");
+        PublicKey publicKey = cert.getPublicKey();
+        return key;
+    }
+    
 }
