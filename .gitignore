@@ -56,3 +56,4 @@ hs_err_pid*
 /src/main/resources/application.yml
 /keystoreDev.p12
 /_secret
+/src/main/resources/_secret

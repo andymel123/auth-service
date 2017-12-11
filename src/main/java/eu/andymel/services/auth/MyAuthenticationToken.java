@@ -30,7 +30,8 @@ public class MyAuthenticationToken extends AbstractAuthenticationToken{
 	
 	
 	// for better readability
-	public String getUserName() {
+	@Override
+	public String getName() {
 		return this.name;
 	}
 	public String getJWTString() {

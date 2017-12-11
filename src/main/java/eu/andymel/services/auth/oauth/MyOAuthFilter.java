@@ -1,14 +1,6 @@
 package eu.andymel.services.auth.oauth;
 
 import java.io.IOException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -18,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -29,14 +22,16 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 import eu.andymel.services.auth.MyAuthenticationToken;
 import eu.andymel.services.auth.jwt.MyJWTUtils;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 public class MyOAuthFilter extends OAuth2ClientAuthenticationProcessingFilter {
 
 	private static final Log logger = LogFactory.getLog(MyOAuthFilter.class);
 	
 	private String defaultFilterProcessesUrl;
+	
+	@Autowired // to let the @Value annotations in MyJWTUtils be processed
+	private MyJWTUtils jwtUtils;
+	
 	
 	public MyOAuthFilter(OAuthProviderConfig oAuthProvider, String defaultFilterProcessesUrl, OAuth2ClientContext oauth2ClientContext) {
 		super(defaultFilterProcessesUrl);
@@ -71,7 +66,7 @@ public class MyOAuthFilter extends OAuth2ClientAuthenticationProcessingFilter {
 		// build my own token (same style no matter which id provider is used)
 		Authentication myAut;
 		try {
-			myAut = buildMyTokenFromIDProviderToken(oa);
+			myAut = MyJWTUtils.buildMyTokenFromIDProviderToken(oa);
 		} catch (Exception e) {
 			// Any exception in here should prevent authentication
 			throw new InternalAuthenticationServiceException(
@@ -113,22 +108,4 @@ public class MyOAuthFilter extends OAuth2ClientAuthenticationProcessingFilter {
     }
 	
 	
-	private MyAuthenticationToken buildMyTokenFromIDProviderToken(OAuth2Authentication providerToken) throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
-		
-		// TODO get name, for now, same as subject
-		String name = providerToken.getName();
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("name", name);
-		
-		String myToken = Jwts.builder()
-                .setSubject(name)
-                .setClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + MyJWTUtils.EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.RS256, MyJWTUtils.getPrivateJWTKey())
-                .compact();
-		
-		return new MyAuthenticationToken(name, myToken);
-	}
 }

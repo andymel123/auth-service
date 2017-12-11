@@ -113,7 +113,7 @@ public class AuthServiceSpringApplication{
 	@ResponseBody // necessary as my app is a @Controller now not a @RestController anymore
 	public Map<String, String> user(MyAuthenticationToken authentication) {
 		Map<String, String> map = new LinkedHashMap<>();
-		map.put("name", authentication.getUserName());
+		map.put("name", authentication.getName());
 		return map;
 	}
 	
@@ -129,7 +129,7 @@ public class AuthServiceSpringApplication{
 	
 	
 	/*
-	 * TODO answer this if guthub redirect works again 
+	 * TODO answer this if github redirect works again 
 	 * https://stackoverflow.com/questions/36252758/spring-boot-oauth2-https-redirect-uri-instead-of-http
 	 * 
 	 * and here
