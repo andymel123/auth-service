@@ -8,6 +8,7 @@ import javax.servlet.Filter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -48,17 +49,14 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 			.antMatcher("/**").authorizeRequests()
 					
 			// only allow the following requests without being logged in
-			.antMatchers("/", "/auth**", "/webjars/**", "/**/favicon.ico").permitAll()
+			.antMatchers("/", "/auth**", "/webjars/**", "/**/favicon.ico", "/auth/assets/**").permitAll()
 			
 			// all others are only allowed when logged in and will result in a 401 if not
 			.anyRequest().authenticated()
 
-			// Unauthenticated users are re-directed to the home page
-//			.and().exceptionHandling()
-//		      .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/"))
-
 			// spring logout
 			.and().logout()
+				.logoutUrl("/auth/logout")
 				.logoutSuccessUrl("/")
 				.logoutSuccessHandler(new JWTCookieRemoverOnLogout())
 				.permitAll()
@@ -71,8 +69,8 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 			 * (we don't use angular) by setting this header for each potentially writing
 			 * (state changing) request to the server.
 			 * 
-			 * 
-			 * TODO will not need that for stateless use I think?!
+			 * TODO
+			 * Do I need that for my stateless JWT approach?! I use cookies to store it so yes?!
 			 */
 			.and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 
@@ -128,6 +126,11 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 	public OAuthProviderConfig google() {
 		return new OAuthProviderConfig();
 	}
+	@Bean
+	@ConfigurationProperties("oauth.twitter")
+	public OAuthProviderConfig twitter() {
+		return new OAuthProviderConfig();
+	}
 
 	
 	
@@ -151,7 +154,7 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 		// TODO move oauthclientcontext and config key name into myOauthFilter class!?
 		filters.add(new MyOAuthFilter(facebook(), 	"/auth/facebook", 	oauth2ClientContext));
 		filters.add(new MyOAuthFilter(google(), 	"/auth/google", 	oauth2ClientContext));
-		filters.add(new MyOAuthFilter(github(), 	"/auth/github", 	oauth2ClientContext));
+		filters.add(new MyOAuthFilter(twitter(), 	"/auth/twitter", 	oauth2ClientContext));
 		filters.add(new MyOAuthFilter(github_al(), 	"/auth/github_al",	oauth2ClientContext));
 		
 		filter.setFilters(filters);

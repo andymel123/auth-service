@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -85,6 +86,8 @@ public class AuthServiceSpringApplication{
 	@Autowired
 	Environment springEnv;
 	
+	private List<String> activeProviders;
+	
 	@PostConstruct
 	public void init() {
 
@@ -106,6 +109,12 @@ public class AuthServiceSpringApplication{
 			logger.debug(sb.toString());
 		}
 		
+		String activeProvidersString = springEnv.getProperty("oauth.active");
+		
+		activeProviders = Arrays.asList(activeProvidersString.split("\\s*,\\s*"));
+
+		logger.debug("List of active providers: "+activeProviders);
+		
 	}
 
 	/* endpoint to get the data of the logged in user (only allowed when logged in) */
@@ -123,7 +132,10 @@ public class AuthServiceSpringApplication{
 	public List<String> getIdProviders() {
 //		// replace by configured data once reading dynamic data from application.yml works
 //		// so https://stackoverflow.com/questions/47676164/bind-complex-config-data-from-application-yml-in-spring-boot
-		return Arrays.asList("facebook", "google", "github", "github_al");
+		
+		
+		return activeProviders;
+//		return Arrays.asList("facebook", "google", "twitter", "github_al");
 	}
 	
 	

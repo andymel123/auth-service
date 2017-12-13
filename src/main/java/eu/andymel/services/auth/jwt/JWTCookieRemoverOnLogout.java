@@ -29,8 +29,8 @@ public class JWTCookieRemoverOnLogout implements LogoutSuccessHandler{
 		if(v==null || v.isEmpty())return;
 		
 		
-		Cookie cookie = new Cookie(MyJWTUtils.COOKIE_STRING, null); // Not necessary, but saves bandwidth.
-		cookie.setPath(accessTokenCookie.getPath());
+		Cookie cookie = new Cookie(MyJWTUtils.COOKIE_STRING, "");//null); // Not necessary, but saves bandwidth.
+		cookie.setPath("/");	// can't take path with 'accessTokenCookie.getPath()' as this returns null
 		cookie.setHttpOnly(true);
 		cookie.setMaxAge(0); // Don't set to -1 or it will become a session cookie!
 		response.addCookie(cookie);
