@@ -11,14 +11,17 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.stereotype.Controller;
@@ -161,16 +164,16 @@ public class AuthServiceSpringApplication{
  * commented out as it makes problems and is not really needed at the moment
  * it redirects to http://localhost...even if my request comdes from https://amcoustics.local
  */
-//	@RequestMapping("/unauthenticated")
-//	public String unauthenticated() {
-//	  return "redirect:/?error=true";
-//	}
-//	
-//	@Bean
-//	public EmbeddedServletContainerCustomizer customizer() {
-//		return container -> {
-//			container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/unauthenticated"));
-//		};
-//	}
+	@RequestMapping("/unauthenticated")
+	public String unauthenticated() {
+	  return "redirect:/?error=Login failed!";
+	}
+	
+	@Bean
+	public EmbeddedServletContainerCustomizer customizer() {
+		return container -> {
+			container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/unauthenticated"));
+		};
+	}
 	
 }
