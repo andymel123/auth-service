@@ -1,4 +1,4 @@
-package eu.amcoustics.auth.test.springauthtutorial;
+package eu.andymel.services.auth;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
