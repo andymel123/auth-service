@@ -58,3 +58,5 @@ hs_err_pid*
 /_secret
 /src/main/resources/_secret
 /src/main/resources/authservice.jks
+/HowToRun.txt
+/copy2deploy.bat
