@@ -28,9 +28,6 @@ public class JWTAuthorizationFilter extends AbstractAuthenticationProcessingFilt
 				
 			@Override
 			public boolean matches(HttpServletRequest request) {
-//				return !"/".equals(request.getRequestURI());
-				
-				
 				// if the jwt cookie is present, do authorization with this filter
 				// otherwise do authorization with my OAuth filters
 				Cookie accessTokenCookie = WebUtils.getCookie(request, MyJWTUtils.COOKIE_STRING); 
@@ -44,22 +41,22 @@ public class JWTAuthorizationFilter extends AbstractAuthenticationProcessingFilt
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
+
 //		super.successfulAuthentication(request, response, chain, authResult);
-		
 		
 		/* added this because the default behavior of AbstractAuthenticationProcessingFilter is
 		 * redirecting to / after successful authentication
-		 * 
 		 *  
 		 *  At the moment I get a 403 for the /user request, although this 
 		 *  successfulAuthentication method is called. Seems like the authentication 
 		 *  object is not set as I don't call super now.
 		 *  
-		 *  lets try saving it myself 
+		 *  lets try saving it myself
 		 */
-		
+
+		logger.debug("jwt auth success => setting Authentication object...");
+
 		SecurityContextHolder.getContext().setAuthentication(authResult);
-		
 		
 		logger.debug("jwt auth success => going on in chain...");
 		
@@ -70,7 +67,6 @@ public class JWTAuthorizationFilter extends AbstractAuthenticationProcessingFilt
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
     	
 		Authentication ret = null;
-		
 		
 		Cookie accessTokenCookie = WebUtils.getCookie(request, MyJWTUtils.COOKIE_STRING); 
     	
@@ -87,7 +83,7 @@ public class JWTAuthorizationFilter extends AbstractAuthenticationProcessingFilt
             }
         }
         
-//		logger.debug("attemptAuthentication "+this+" => "+ret);
+		logger.debug("attemptAuthentication "+this+" => "+ret);
 
 //        SecurityContextHolder.getContext().setAuthentication(authentication);
         

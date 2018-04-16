@@ -95,15 +95,37 @@ public class MyOAuthFilter extends OAuth2ClientAuthenticationProcessingFilter {
         Cookie jwtAccessCookie = new Cookie("access_token", myToken);
         
         jwtAccessCookie.setPath("/");		// so it is visible set for all paths, not just for the login/provider sub path
+        
+        if(!req.isSecure()){
+        	/* This could be ok, if I use a proxy like an api gateway (for example nginx) to handle 
+        	 * https and the connection from the proxy to this service is not secure. No man in the 
+        	 * middle attack possible by reading the clients traffic. But I guess 
+        	 * the proxy would also not send the cockie to the server because of thise flag?!
+        	 * This would be a problem. */
+        	logger.warn("#######################################################################");
+        	logger.warn("access_token cockie is set as 'secure' but the connection is not https!");
+        	logger.warn("Probably authentication will not work as the cockie will not be sent!  ");
+        	logger.warn("#######################################################################");
+        }
+        
         jwtAccessCookie.setSecure(true);	// browser may only add this cockie if https 	
         jwtAccessCookie.setHttpOnly(true);	// javascript may not read the cookie 
         jwtAccessCookie.setMaxAge(MyJWTUtils.EXPIRATION_TIME/1000);	// same as jwt token
+        
         
         res.addCookie(jwtAccessCookie);
 
         /* added to let the OAuth2ClientAuthenticationProcessingFilter
          * take care about the redirect from /auth/... back to '/' */
         super.successfulAuthentication(req, res, chain, auth);
+        
+        
+//        logger.debug("-----------------------");
+//        res.getHeaderNames().stream()
+//        	.forEach((n)-> {
+//	        	logger.debug(n+": "+res.getHeader(n));
+//	        });
+//        logger.debug("-----------------------");
         
     }
 	

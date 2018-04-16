@@ -69,8 +69,7 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 			 * (we don't use angular) by setting this header for each potentially writing
 			 * (state changing) request to the server.
 			 * 
-			 * TODO
-			 * Do I need that for my stateless JWT approach?! I use cookies to store it so yes?!
+			 * To protect my JWT cookie
 			 */
 			.and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 
@@ -78,10 +77,10 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			
 			.and()
-				// set the OAuth filter before, it will only handle his login/provider...rquests
+				// set the OAuth filter before, it will only handle login/provider requests
 				// all other requests, will go on in the filter chain and reach my jwt filter net
 				.addFilterBefore(
-					authenticationFilter(), 	// my combined OAuth2 filter that filters a given path per id provider 
+					oauthAuthenticationFilter(), 	// my combined OAuth2 filter that filters a given path per id provider 
 					BasicAuthenticationFilter.class	// add it before this filter class
 				)
 				.addFilterBefore(
@@ -145,7 +144,7 @@ public class AuthServiceConfigurer extends WebSecurityConfigurerAdapter {
 	/*
 	 * Combine my authentication filters to one filter
 	 */
-	private Filter authenticationFilter() {
+	private Filter oauthAuthenticationFilter() {
 		
 		CompositeFilter filter = new CompositeFilter();
 		

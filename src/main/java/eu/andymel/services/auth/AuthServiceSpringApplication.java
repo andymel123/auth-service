@@ -61,7 +61,7 @@ import eu.andymel.services.auth.oauth.OAuthProviderConfig;
  * For the OAuth part:
  *  > {@link MyOAuthFilter} extends OAuth2ClientAuthenticationProcessingFilter and adds 
  *  	> loading the provider data from the application.yml
- * 		> creating my {@link MyAuthenticationToken} when getting a successful answer from tzhe id provider
+ * 		> creating my {@link MyAuthenticationToken} when getting a successful answer from the id provider
  * 		> creating a cookie with the JWT token in the users request
  *  > {@link OAuthProviderConfig} holds the id-provider data from the application.yml
  *  

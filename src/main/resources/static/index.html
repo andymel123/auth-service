@@ -15,9 +15,9 @@
 </head>
 <body>
 
-	<h1>Login</h1>
+	<h1>Login-Test</h1>
 
-	<div id="divLogins" class="container unauthenticated"></div>
+	<div id="divLogins" class="container unauthenticated" style="display:none"></div>
 
 	<div class="container authenticated" style="display:none">
 	    Logged in as: <span id="user"></span>
@@ -32,23 +32,25 @@
 	
 	<script type="text/javascript">
 	
-		console.log("Try to fetch provider data...");
-		$.ajax(
-		{
-			url : "/auth",
-			success : function(providerData) {
-				console.log("got providerData", providerData);
+		function fetchLoginProviders(){
+			console.log("Try to fetch provider data...");
+			$.ajax(
+			{
+				url : "/auth",
+				success : function(providerData) {
+					console.log("got providerData", providerData);
 
-				var divLogins = $("#divLogins");
-				for(var i=0; i<providerData.length; i++){
-					var name = providerData[i];
-					divLogins.append("<div>With "+name+": <a href='/auth/"+name+"'>click here</a></div>")
+					var divLogins = $("#divLogins");
+					for(var i=0; i<providerData.length; i++){
+						var name = providerData[i];
+						divLogins.append("<div>With "+name+": <a href='/auth/"+name+"'>click here</a></div>")
+					}
+				},
+				error : function(data) {
+					console.warn("Could not get providerData", data);
 				}
-			},
-			error : function(data) {
-				console.warn("Could not get providerData", data);
-			}
-		});
+			});
+		}
 	
 		/* Im 3ten schritt des Tutorials wird für den logout request dieser token gegen 
 			csrf (cross site request forgery) hinzugefügt. */
@@ -76,7 +78,7 @@
 	    		
 	    		TODO change to /auth/logout ?!
 	    		*/
-	        $.post("/logout", function() {
+	        $.post("/auth/logout", function() {
 	            $("#user").html('');
 	            $(".unauthenticated").show();
 	            $(".authenticated").hide();
@@ -98,6 +100,7 @@
 				$(".authenticated").show();
 			},
 			error : function(data) {
+				fetchLoginProviders();
 				$("#user").html('');
 				$(".unauthenticated").show();
 				$(".authenticated").hide();

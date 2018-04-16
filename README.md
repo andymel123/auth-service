@@ -1,7 +1,7 @@
 # auth-service
 OAuth2 in => JWT out 
 
-**> not working yet <**
+**> not production ready yet <**
 
 What I want
 

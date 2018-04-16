@@ -38,11 +38,12 @@
 <!-- 			<artifactId>spring-boot-starter-web</artifactId> -->
 <!-- 		</dependency> -->
 		
-<!-- 		I try undertow as I read good things about needing less resources
-and as I have the problems with the redirect to http  -->
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-web</artifactId>
+<!-- 		I try undertow as I read good things about needing less resources and as 
+			I have problems with the redirect to http with the default tomcat
+			see https://stackoverflow.com/questions/47690733/springboot-behind-proxy-works-with-undertow-but-not-with-tomcat/49682248#49682248-->
 		    <exclusions>
 		        <exclusion>
 		            <groupId>org.springframework.boot</groupId>
