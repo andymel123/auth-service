@@ -1,9 +1,10 @@
 # auth-service
 OAuth2 in => JWT out 
 
-**> not working yet <**
+**> Not production ready yet <**
 
-What I want
-
-- To get authorized to use one of my future microservices a user retrieves a JWT from this service first
-- authentication will be delegated to google,facebook,...
+Goals:
+- The service handles authentication with OAuth at Google, Facebook,...
+- It issues JWT tokens
+- An API to get the Public Key for checking the tokens (available to other services or the API-Gateway)
+- The API-Gateway or the resource services just need to read the tokens from the requests and check against the public key of this service
