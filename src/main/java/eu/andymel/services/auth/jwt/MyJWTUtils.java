@@ -1,5 +1,6 @@
 package eu.andymel.services.auth.jwt;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -10,7 +11,10 @@ import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -20,16 +24,20 @@ import org.springframework.stereotype.Component;
 
 import eu.andymel.services.auth.MyAuthenticationToken;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import sun.misc.BASE64Encoder;
 
  
 @Component // to let the class be instantiated as a SpringBean (so the @Value annotations get processed)
 public class MyJWTUtils {
 
 	// TODO set in application.yml
-	public static final int EXPIRATION_TIME = 5*60*1000; // 5 min
+	// could also be set dynamically based on the load of the auth service (with min/max I guess?!)
+	public static final int EXPIRATION_TIME = 5000*60*1000; // 30 min
     public static final boolean USE_PREFIX = false;
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String COOKIE_STRING = "access_token";	// or use OAuth2AccessToken.ACCESS_TOKEN
@@ -147,6 +155,7 @@ public class MyJWTUtils {
 		claims.setSubject(name);
 		
 		JwtBuilder myToken = Jwts.builder()
+                //.setHeaderParam("typ" , "JWT")
                 .setSubject(name)
                 .setClaims(claims)
                 .setIssuedAt(new Date())
@@ -155,8 +164,65 @@ public class MyJWTUtils {
 		
 		String myTokenString = myToken.compact();
 		
-		return new MyAuthenticationToken(name, myTokenString);
+		MyAuthenticationToken t = new MyAuthenticationToken(name, myTokenString);
+		
+		return t;
 	}
 
     
+	
+	public static void main(String[] args) throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+		
+		MyJWTUtils m = new MyJWTUtils();
+		
+		m.setKeystore("authservice.jks");
+		m.setKeyStoreType("JKS");
+		
+		// removed as published to github
+		// If I need this again...read from (git ignored) file
+		m.setKeyAlias("***");
+		m.setKeyStorePassword("***");
+		
+		m.init();
+
+		MyAuthenticationToken t = m.buildMyTokenFromIDProviderToken(new Principal() {
+			
+			@Override
+			public String getName() {
+				return "testName";
+			}
+			
+		});
+		
+		String jwt = t.getJWTString();
+		
+		
+		d("pubkey format '"+publicKey.getFormat()+"'");
+    	d("pubkey encoded '"+Base64.getEncoder().encodeToString(publicKey.getEncoded())+"'");
+		
+		Jws<Claims> claims = Jwts.parser()
+                .setSigningKey(publicKey)
+                .parseClaimsJws(jwt.replace(TOKEN_PREFIX, ""));
+		
+		
+        Claims body = claims.getBody();
+        JwsHeader header = claims.getHeader();
+        String signature = claims.getSignature();
+
+		d(header);
+		d(body);
+		d(jwt);
+	}
+	
+	private static void d(Object o) {
+		
+		if(o instanceof Map) {
+			Map m = (Map)o;
+			Set keys = m.keySet();
+			keys.forEach(k -> {d(k+" => "+m.get(k));});
+		} else {
+			System.out.println(o);
+		}
+		
+	}
 }

@@ -60,3 +60,5 @@ hs_err_pid*
 /src/main/resources/authservice.jks
 /HowToRun.txt
 /copy2deploy.bat
+/src/main/resources/*.pem
+/src/main/resources/*.cer
