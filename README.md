@@ -1,12 +1,8 @@
 # auth-service
 OAuth2 in => JWT out 
 
-**> not production ready yet <**
-
-What I want
-
-- To get authorized to use one of my future microservices a user retrieves a JWT from this service first
-- authentication will be delegated to google,facebook,...
+- A user retrieves a JWT from this service to be able to use other services
+- authentication is delegated to id providers like google, facebook,...
 
 # How to run
 either simply start in IDE (AuthServiceSpringApplication.java has main entrypoint)
