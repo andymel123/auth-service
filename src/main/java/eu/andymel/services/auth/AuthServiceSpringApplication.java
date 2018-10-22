@@ -161,7 +161,7 @@ public class AuthServiceSpringApplication{
 	 * see ServletCustomizer.java - this adds an ErrorPage for HttpStatus.UNAUTHORIZED to "/unauthenticated"
 	 */
 /*
- * commented out as it makes problems and is not really needed at the moment
+ * is this really needed at the moment?! made problems once 
  * it redirects to http://localhost...even if my request comdes from https://amcoustics.local
  */
 	@RequestMapping("/unauthenticated")
