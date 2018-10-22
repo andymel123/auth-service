@@ -7,10 +7,10 @@
     <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width"/>
     <base href="/"/>
-    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
     <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
+<!--     <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/> -->
+<!--     <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script> -->
     
 </head>
 <body>
@@ -42,8 +42,18 @@
 
 					var divLogins = $("#divLogins");
 					for(var i=0; i<providerData.length; i++){
+
 						var name = providerData[i];
-						divLogins.append("<div>With "+name+": <a href='/auth/"+name+"'>click here</a></div>")
+						
+						var providerLogoSrc = "/auth/assets/"+name+".png"; // default
+						// overwrite for different pic
+						switch(name){
+							case "google": break;
+							case "facebook": break;
+						}
+						
+// 						divLogins.append("<div>With "+name+": <a href='/auth/"+name+"'>click here</a></div>")
+						divLogins.append("<div class='col-md'><a href='/auth/"+name+"' class='btn loginBtn'><img id='imgLogo_"+name+"' src='"+providerLogoSrc+"' width='20' /> Sign In with "+name+"</a></div>")
 					}
 				},
 				error : function(data) {
