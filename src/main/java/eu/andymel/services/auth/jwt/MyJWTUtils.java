@@ -1,6 +1,5 @@
 package eu.andymel.services.auth.jwt;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -29,7 +28,6 @@ import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import sun.misc.BASE64Encoder;
 
  
 @Component // to let the class be instantiated as a SpringBean (so the @Value annotations get processed)
@@ -37,7 +35,6 @@ public class MyJWTUtils {
 
 	// TODO set in application.yml
 	// could also be set dynamically based on the load of the auth service (with min/max I guess?!)
-	public static final int EXPIRATION_TIME = 5000*60*1000; // 30 min
     public static final boolean USE_PREFIX = false;
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String COOKIE_STRING = "access_token";	// or use OAuth2AccessToken.ACCESS_TOKEN
@@ -48,6 +45,7 @@ public class MyJWTUtils {
     private static String keyStoreType;
     private static String keyAlias;
     private static String keyStorePassword;
+	private static int expirationTime = 30*60*1000; // 30 min
 
     // TODO hide the code that loads from application.yml in a super class
     // setting static @Values from https://www.mkyong.com/spring/spring-inject-a-value-into-static-variables/
@@ -67,7 +65,11 @@ public class MyJWTUtils {
     public void setKeyStorePassword(String s) {
 		keyStorePassword = s;
 	}
-
+	@Value("${jwt.expirationTime}")
+    public void setExpirationTime(int s) {
+		expirationTime = s;
+	}
+	
 	
     // cache keys in memory
     private static KeyStore jwtKeyStore = null;
@@ -159,7 +161,7 @@ public class MyJWTUtils {
                 .setSubject(name)
                 .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + MyJWTUtils.EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + MyJWTUtils.expirationTime*1000))
                 .signWith(SignatureAlgorithm.RS256, MyJWTUtils.getPrivateJWTKey());
 		
 		String myTokenString = myToken.compact();
@@ -212,6 +214,10 @@ public class MyJWTUtils {
 		d(header);
 		d(body);
 		d(jwt);
+	}
+	
+	public static int getExpirationTime() {
+		return expirationTime;
 	}
 	
 	private static void d(Object o) {

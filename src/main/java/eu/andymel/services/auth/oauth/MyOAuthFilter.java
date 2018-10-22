@@ -110,7 +110,7 @@ public class MyOAuthFilter extends OAuth2ClientAuthenticationProcessingFilter {
         
         jwtAccessCookie.setSecure(true);	// browser may only add this cockie if https 	
         jwtAccessCookie.setHttpOnly(true);	// javascript may not read the cookie 
-        jwtAccessCookie.setMaxAge(MyJWTUtils.EXPIRATION_TIME/1000);	// same as jwt token
+        jwtAccessCookie.setMaxAge(MyJWTUtils.getExpirationTime());	// same as jwt token
         
         
         res.addCookie(jwtAccessCookie);
