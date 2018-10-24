@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 import eu.andymel.services.auth.MyAuthenticationToken;
@@ -130,8 +131,24 @@ public class MyJWTUtils {
     	
     }
     
-    
-    
+    /**
+     * The token is valid if there is no exception parsing it (not altered) and
+     * the expiration date is in the future
+     * 
+     * @param accessToken
+     * @return true if valid, false otherwise
+     */
+//	public static boolean isValidJWTTokenString(String accessToken) {
+//		try {
+//			Date expirationDate = Jwts.parser()
+//	                .setSigningKey(publicKey)
+//	                .parseClaimsJws(accessToken.replace(TOKEN_PREFIX, ""))
+//	                .getBody().getExpiration();
+//			return expirationDate!=null && expirationDate.after(new Date());
+//		}catch(Exception e) {
+//			return false;
+//		}
+//	}
     
     public static String getNameFromJWTTokenString(String accessToken) {
 		try {
@@ -171,7 +188,26 @@ public class MyJWTUtils {
 		return t;
 	}
 
-    
+	public static MyAuthenticationToken buildMyTokenFromFormerTokenStringIfValid(String accessToken) {
+
+		String name = MyJWTUtils.getNameFromJWTTokenString(accessToken);
+        
+		if(name==null){
+			throw new JwtInvalidException("JWT has no name!");
+		}
+		
+		Date expirationDate = Jwts.parser()
+                .setSigningKey(publicKey)
+                .parseClaimsJws(accessToken.replace(TOKEN_PREFIX, ""))
+                .getBody().getExpiration();
+		
+		if(expirationDate==null || expirationDate.before(new Date())){
+			throw new JwtInvalidException("JWT for name '"+name+"' expired on "+expirationDate);
+		}
+		
+		return new MyAuthenticationToken(name, accessToken);
+		
+	}
 	
 	public static void main(String[] args) throws UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		
@@ -231,4 +267,5 @@ public class MyJWTUtils {
 		}
 		
 	}
+	
 }

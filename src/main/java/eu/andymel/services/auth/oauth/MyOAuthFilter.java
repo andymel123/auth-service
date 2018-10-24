@@ -127,6 +127,8 @@ public class MyOAuthFilter extends OAuth2ClientAuthenticationProcessingFilter {
 //	        });
 //        logger.debug("-----------------------");
         
+        logger.info("OAuth2-success: "+auth.getName());
+
     }
 	
 	

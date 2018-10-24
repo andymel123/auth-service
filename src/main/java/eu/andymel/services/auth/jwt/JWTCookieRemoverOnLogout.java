@@ -36,7 +36,7 @@ public class JWTCookieRemoverOnLogout implements LogoutSuccessHandler{
 		response.addCookie(cookie);
 		
 		String name = MyJWTUtils.getNameFromJWTTokenString(v);
-		logger.debug("AccessToken Cookie removed for '"+name+"'");
+		logger.info("Logged out: "+name);
 	}
 
 }
