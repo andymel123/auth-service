@@ -62,7 +62,6 @@ public class MyOAuthFilter extends OAuth2ClientAuthenticationProcessingFilter {
 
 		OAuth2Authentication oa = (OAuth2Authentication)origAut;
 
-
 		// build my own token (same style no matter which id provider is used)
 		Authentication myAut;
 		try {
